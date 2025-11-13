@@ -1,0 +1,59 @@
+﻿@model CalorieBurnMgt.Models.User
+
+<div class="main">
+    <div class="profile">
+        <div>
+            <h2>Your Profile</h2>
+            @if (Model != null)
+            {
+                <p><strong>Name:</strong> @Model.Name</p>
+                <p><strong>Age:</strong> @Model.Age</p>
+                <p><strong>Weight:</strong> @Model.Weight kg</p>
+                <p><strong>Height:</strong> @Model.Height cm</p>
+                <p><strong>BMI: @Model.BMI</strong></p>
+
+                @if (Model.Calorie != null)
+                {
+                    <p><strong>Calorie Balance: </strong> @Model.Calorie.TotalCalorieBalance calories</p>
+                }
+                else
+                {
+                    <p><strong>Calorie Balance: </strong> No calorie data available</p>
+                }
+            }
+            else
+            {
+                <p>No user profile found. <a href="/User/Create">Create your profile</a></p>
+            }
+        </div>
+
+        <div>
+            <h3>Share to</h3>
+            <p>Facebook</p>
+            <p>Twitter</p>
+            <p>Instagram</p>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="calories">
+            <div><p>@(Model.Calorie?.TotalCalorieBalance ?? 0) calories</p></div>
+            <div><p>XX Minimum distance</p></div>
+            <div>
+                <button class="btn btn-primary">Add Calories</button>
+                <button class="btn btn-primary">Add Calories Burn</button>
+                <button class="btn btn-primary">Reset</button>
+            </div>
+            <div>
+                <a href="/">Walking</a>
+                <a href="/">Jogging</a>
+                <a href="/">Cycling</a>
+            </div>
+            <div>
+                <h2>Calorie Burn History</h2>
+                <p>Put graph here</p>
+            </div>
+        </div>
+    }
+</div>

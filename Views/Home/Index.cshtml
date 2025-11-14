@@ -1,6 +1,6 @@
 ﻿@model CalorieBurnMgt.Models.User
 
-<div class="main">
+<div class="main-container">
     <div class="profile">
         <div>
             <h2>Your Profile</h2>
@@ -37,20 +37,29 @@
 
     @if (Model != null)
     {
-        <div class="calories">
-            <div><p>@(Model.Calorie?.TotalCalorieBalance ?? 0) calories</p></div>
-            <div><p>XX Minimum distance</p></div>
-            <div>
-                <button class="btn btn-primary">Add Calories</button>
-                <button class="btn btn-primary">Add Calories Burn</button>
-                <button class="btn btn-primary">Reset</button>
+        <div class="calories-container">
+            <div class="calories-value">
+                <div class="calorie-items">
+                    <div class="calorie-item">
+                        <p>@(Model.Calorie?.TotalCalorieBalance ?? 0) calories</p>
+                    </div>
+                    <div class="calorie-item">
+                        <p>XX Minimum distance</p>
+                    </div>
+                    <div class="calorie-buttons">
+                        <button class="btn btn-primary">Add Calories</button>
+                        <button class="btn btn-primary">Add Calories Burn</button>
+                        <button class="btn btn-primary">Reset</button>
+                    </div>
+                </div>
             </div>
-            <div>
+
+            <div class="activities">
                 <a href="/">Walking</a>
                 <a href="/">Jogging</a>
                 <a href="/">Cycling</a>
             </div>
-            <div>
+            <div class="history">
                 <h2>Calorie Burn History</h2>
                 <p>Put graph here</p>
             </div>

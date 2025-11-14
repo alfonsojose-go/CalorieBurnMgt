@@ -20,3 +20,101 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.main-container {
+    display: flex;
+    width: 100%;
+    gap: 20px; /* Optional: adds space between the two sections */
+}
+
+.profile {
+    flex: 0 0 20%; /* Don't grow, don't shrink, 20% width */
+    background-color: #13A938; 
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.calories-container {
+    flex: 0 0 80%; /* Don't grow, don't shrink, 80% width */
+    background-color: #ffffff; /* Optional: for visual distinction */
+    padding: 20px;
+    box-sizing: border-box;
+    gap: 30px;
+}
+
+.calories-value {
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    
+}
+
+.calorie-items {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calorie-item {
+    flex: 1;
+    text-align: center;
+}
+
+.calorie-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+    .calorie-buttons .btn {
+        width: 100%;
+    }
+
+
+.activities {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    display: flex;
+    justify-content: space-between; /* or space-around, space-evenly */
+    gap: 10px; /* Optional: space between items */
+}
+
+.activities a {
+        flex: 1; /* Each link takes equal width */
+        text-align: center;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.3s;
+    }
+
+    .activities a:hover {
+        background-color: #13A938;
+    }
+
+.history {
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    
+}
+
+/* Optional: Responsive design for mobile */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .profile, .calories-container {
+        flex: 0 0 100%;
+        width: 100%;
+    }
+}

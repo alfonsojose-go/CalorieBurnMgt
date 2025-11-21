@@ -14,13 +14,11 @@ namespace CalorieBurnMgt.Controllers
             this.context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int userId = 6) // Pass userId as parameter
         {
-            // Get the first user from database (adjust as needed)
             var user = context.Users
-                .Include(u => u.Calorie) // Include related Calorie data if needed
-                .FirstOrDefault();
-
+                .Include(u => u.Calories)
+                .FirstOrDefault(u => u.UserId == userId);
             return View(user);
         }
     }

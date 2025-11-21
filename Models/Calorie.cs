@@ -15,12 +15,6 @@
 
         public int CaloriesBurned { get; set; } // = to formula of David
 
-        public int TotalCalorieBalance
-        {
-            get
-            {
-                return CaloriesTaken - CaloriesBurned;
-            }
-        }
+        
     }
 }

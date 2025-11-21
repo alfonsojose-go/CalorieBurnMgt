@@ -8,7 +8,8 @@
         public int Weight { get; set; } // in kilograms
         public int Height { get; set; } // in centimeters
 
-        public int BMI         {
+        public int BMI
+        {
             get
             {
                 double heightInMeters = Height / 100.0;
@@ -16,6 +17,21 @@
             }
         }
 
-        public Calorie Calorie  { get; set; }
+        // Navigation property - changed to collection
+        public ICollection<Calorie> Calories { get; set; }
+
+        // Calculate total calorie balance
+        public int TotalCalorieBalance
+        {
+            get
+            {
+                if (Calories == null || !Calories.Any())
+                    return 0;
+
+                int totalTaken = Calories.Sum(c => c.CaloriesTaken);
+                int totalBurned = Calories.Sum(c => c.CaloriesBurned);
+                return totalTaken - totalBurned;
+            }
+        }
     }
 }

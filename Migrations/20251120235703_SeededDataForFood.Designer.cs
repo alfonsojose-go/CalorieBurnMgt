@@ -4,6 +4,7 @@ using CalorieBurnMgt.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CalorieBurnMgt.Migrations
 {
     [DbContext(typeof(CalorieBurnDbContext))]
-    partial class CalorieBurnDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251120235703_SeededDataForFood")]
+    partial class SeededDataForFood
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -53,7 +56,8 @@ namespace CalorieBurnMgt.Migrations
 
                     b.HasKey("CalorieId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Calories");
                 });
@@ -229,15 +233,16 @@ namespace CalorieBurnMgt.Migrations
             modelBuilder.Entity("CalorieBurnMgt.Models.Calorie", b =>
                 {
                     b.HasOne("CalorieBurnMgt.Models.User", null)
-                        .WithMany("Calories")
-                        .HasForeignKey("UserId")
+                        .WithOne("Calorie")
+                        .HasForeignKey("CalorieBurnMgt.Models.Calorie", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("CalorieBurnMgt.Models.User", b =>
                 {
-                    b.Navigation("Calories");
+                    b.Navigation("Calorie")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

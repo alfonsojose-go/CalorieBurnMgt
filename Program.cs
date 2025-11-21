@@ -1,8 +1,5 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using CalorieBurnMgt.Models;
 
 using CalorieBurnMgt.Data;
 using CalorieBurnMgt.Models;
@@ -11,12 +8,12 @@ using CalorieBurnMgt.Services;
 using BCrypt.Net;
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
-builder.Services.AddDbContext<AppDbContext>(options =>
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<CalorieBurnDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Services
-builder.Services.AddSingleton<JwtService>();
+var app = builder.Build();
 
 // JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -43,7 +40,7 @@ builder.Services.AddSession(options => {
 var app = builder.Build();
 
 app.UseRouting();
-app.UseAuthentication();
+
 app.UseAuthorization();
 app.MapControllers();
 app.UseSession();

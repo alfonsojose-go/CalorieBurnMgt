@@ -12,9 +12,9 @@
                 <p><strong>Height:</strong> @Model.Height cm</p>
                 <p><strong>BMI: @Model.BMI</strong></p>
 
-                @if (Model.Calorie != null)
+                @if (Model.TotalCalorieBalance != null)
                 {
-                    <p><strong>Calorie Balance: </strong> @Model.Calorie.TotalCalorieBalance calories</p>
+                    <p><strong>Calorie Balance: </strong> @Model.TotalCalorieBalance calories</p>
                 }
                 else
                 {
@@ -41,15 +41,15 @@
             <div class="calories-value">
                 <div class="calorie-items">
                     <div class="calorie-item">
-                        <p>@(Model.Calorie?.TotalCalorieBalance ?? 0) calories</p>
+                        <p>@Model.TotalCalorieBalance calories</p>
                     </div>
                     <div class="calorie-item">
                         <p>XX Minimum distance</p>
                     </div>
                     <div class="calorie-buttons">
-                        <button class="btn btn-primary">Add Calories</button>
-                        <button class="btn btn-primary">Add Calories Burn</button>
-                        <button class="btn btn-primary">Reset</button>
+                        <a asp-controller="Calorie" asp-action="AddCalorie" class="btn btn-primary">Add Calories</a>
+                        <a asp-controller="Calorie" asp-action="AddDistance" class="btn btn-primary">Add Distance</a>
+                        
                     </div>
                 </div>
             </div>
@@ -58,10 +58,6 @@
                 <a href="/">Walking</a>
                 <a href="/">Jogging</a>
                 <a href="/">Cycling</a>
-            </div>
-            <div class="history">
-                <h2>Calorie Burn History</h2>
-                <p>Put graph here</p>
             </div>
         </div>
     }

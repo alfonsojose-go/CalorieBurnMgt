@@ -99,13 +99,6 @@ body {
         background-color: #13A938;
     }
 
-.history {
-    padding: 25px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    
-}
 
 /* Optional: Responsive design for mobile */
 @media (max-width: 768px) {

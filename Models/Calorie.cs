@@ -8,16 +8,13 @@
         public DateTime DateConsumed { get; set; }
 
         public DateTime DateBurned { get; set; }
+
         public int CaloriesTaken { get; set; } // in kcal
 
-        public int CaloriesBurned { get; set; } // in kcal
+        public int DistanceTaken { get; set; } // in kilometers
 
-        public int TotalCalorieBalance
-        {
-            get
-            {
-                return CaloriesTaken - CaloriesBurned;
-            }
-        }
+        public int CaloriesBurned { get; set; } // = to formula of David
+
+        
     }
 }

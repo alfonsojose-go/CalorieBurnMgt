@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CalorieBurnMgt.Migrations
 {
     [DbContext(typeof(CalorieBurnDbContext))]
-    [Migration("20251113221627_Initial")]
-    partial class Initial
+    [Migration("20251120215922_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -52,6 +52,9 @@ namespace CalorieBurnMgt.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("CalorieId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Calories");
                 });
@@ -87,12 +90,6 @@ namespace CalorieBurnMgt.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int>("CalorieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CalorieId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("Height")
                         .HasColumnType("int");
 
@@ -105,20 +102,22 @@ namespace CalorieBurnMgt.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("CalorieId1");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CalorieBurnMgt.Models.Calorie", b =>
+                {
+                    b.HasOne("CalorieBurnMgt.Models.User", null)
+                        .WithOne("Calorie")
+                        .HasForeignKey("CalorieBurnMgt.Models.Calorie", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CalorieBurnMgt.Models.User", b =>
                 {
-                    b.HasOne("CalorieBurnMgt.Models.Calorie", "Calorie")
-                        .WithMany()
-                        .HasForeignKey("CalorieId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("Calorie")
                         .IsRequired();
-
-                    b.Navigation("Calorie");
                 });
 #pragma warning restore 612, 618
         }

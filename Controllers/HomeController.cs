@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CalorieBurnMgt.Models;
+using CalorieBurnMgt.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +15,14 @@ namespace CalorieBurnMgt.Controllers
             this.context = context;
         }
 
-        public IActionResult Index(int userId = 6) // Pass userId as parameter
+        public IActionResult Index(string userId)
         {
             var user = context.Users
                 .Include(u => u.Calories)
-                .FirstOrDefault(u => u.UserId == userId);
+                .FirstOrDefault(u => u.Id == userId);
+
             return View(user);
         }
+
     }
 }

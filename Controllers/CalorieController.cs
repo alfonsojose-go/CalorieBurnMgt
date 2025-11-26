@@ -1,4 +1,5 @@
-﻿using CalorieBurnMgt.Helpers;
+﻿using CalorieBurnMgt.Data;
+using CalorieBurnMgt.Helpers;
 using CalorieBurnMgt.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ namespace CalorieBurnMgt.Controllers
         public IActionResult AddCalorie(string[] DateConsumed, string[] FoodName, int[] FoodCalories)
         {
             // Get the current user's ID (adjust this based on your authentication setup)
-            int currentUserId = 6; //sessionHelper.GetCurrentUserId(); // You'll need to implement this method
+            string currentUserId = "6"; //sessionHelper.GetCurrentUserId(); // You'll need to implement this method
 
             // Validate that all arrays have the same length
             if (DateConsumed == null || FoodName == null || FoodCalories == null ||
@@ -95,7 +96,7 @@ namespace CalorieBurnMgt.Controllers
         public IActionResult AddDistance(string[] DateBurned, decimal[] DistanceTaken)
         {
             // Get the current user's ID using SessionHelper
-            int currentUserId = 6; // sessionHelper.GetCurrentUserId();
+            string currentUserId = "6"; ; // sessionHelper.GetCurrentUserId();
 
             // Validate that all arrays have the same length
             if (DateBurned == null || DistanceTaken == null || DateBurned.Length != DistanceTaken.Length)

@@ -23,37 +23,37 @@ namespace CalorieBurnMgt.Controllers
             _jwt = jwt;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterRequest dto)
-        {
-            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
-                return BadRequest(new { message = "User already exists" });
+        //[HttpPost("register")]
+        //public async Task<IActionResult> Register(RegisterRequest dto)
+        //{
+        //    if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+        //        return BadRequest(new { message = "User already exists" });
 
-            var user = new User
-            {
-                Username = dto.Uname,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
-            };
+        //    var user = new User
+        //    {
+        //        Username = dto.Uname,
+        //        PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+        //    };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        //    _context.Users.Add(user);
+        //    await _context.SaveChangesAsync();
 
-            return Ok(new { message = "User registered successfully" });
-        }
+        //    return Ok(new { message = "User registered successfully" });
+        //}
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest dto)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(x =>
-                x.Username == dto.Username);
+        //[HttpPost("login")]
+        //public async Task<IActionResult> Login(LoginRequest dto)
+        //{
+        //    var user = await _context.Users.FirstOrDefaultAsync(x =>
+        //        x.Username == dto.Username);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                return BadRequest(new { message = "Invalid credentials" });
+        //    if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+        //        return BadRequest(new { message = "Invalid credentials" });
 
-            var token = _jwt.GenerateToken(user);
+        //    var token = _jwt.GenerateToken(user);
 
-            return Ok(new { token });
-        }
+        //    return Ok(new { token });
+        //}
 
         [Authorize]
         [HttpGet("protected")]

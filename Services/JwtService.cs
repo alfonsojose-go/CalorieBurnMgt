@@ -15,24 +15,24 @@ namespace CalorieBurnMgt.Services
             _config = config;
         }
 
-        public string GenerateToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim("id", user.Id.ToString()),
-                new Claim("username", user.Username)
-            };
+        //public string GenerateToken(User user)
+        //{
+        //    var claims = new[]
+        //    {
+        //        new Claim("id", user.Id.ToString()),
+        //        new Claim("username", user.Username)
+        //    };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Secret"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Secret"]));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                expires: DateTime.UtcNow.AddHours(1),
-                claims: claims,
-                signingCredentials: creds
-            );
+        //    var token = new JwtSecurityToken(
+        //        expires: DateTime.UtcNow.AddHours(1),
+        //        claims: claims,
+        //        signingCredentials: creds
+        //    );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
     }
 }

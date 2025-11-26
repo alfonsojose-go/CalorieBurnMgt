@@ -1,53 +1,59 @@
-using Microsoft.EntityFrameworkCore;
+﻿using CalorieBurnMgt.Data;
 using CalorieBurnMgt.Models;
-
-using CalorieBurnMgt.Data;
-using CalorieBurnMgt.Models;
-using CalorieBurnMgt.DTOs;
 using CalorieBurnMgt.Services;
-using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Stripe configuration
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+// Add MVC services
 builder.Services.AddControllersWithViews();
+
+// EF Core DbContext
 builder.Services.AddDbContext<CalorieBurnDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ASP.NET Core Identity
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<CalorieBurnDbContext>()
+    .AddDefaultTokenProviders();
 
+// Register email service
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-// JWT Auth
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]);
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = false,
-//            ValidateAudience = false,
-//            ValidateIssuerSigningKey = true,
-//            IssuerSigningKey = new SymmetricSecurityKey(key)
-//        };
-//    });
-
-builder.Services.AddControllers();
-builder.Services.AddAuthorization();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options => {
-    options.IdleTimeout = TimeSpan.FromHours(1);
-    options.Cookie.HttpOnly = true;
+// Configure application cookie
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Users/Login";
+    options.LogoutPath = "/Users/Logout";
 });
 
+// Session (optional)
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
+// Middleware
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+// Default route
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+    pattern: "{controller=Users}/{action=Login}/{id?}");
 
 app.Run();

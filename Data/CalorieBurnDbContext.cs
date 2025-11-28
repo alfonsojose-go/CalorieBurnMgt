@@ -1,21 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CalorieBurnMgt.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-
-namespace CalorieBurnMgt.Models
+namespace CalorieBurnMgt.Data
 {
-    public class CalorieBurnDbContext : DbContext
+    public class CalorieBurnDbContext : IdentityDbContext<User>
     {
         public CalorieBurnDbContext(DbContextOptions<CalorieBurnDbContext> options)
             : base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
+
+        // 保留原有 DbSet
+        public DbSet<User> Users { get; set; } // Identity 会自动管理 User 表，可以保留或删除视情况
         public DbSet<Food> Foods { get; set; }
         public DbSet<Calorie> Calories { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); // 必须调用 base，Identity 才能正确生成表结构
+
+            // 保留种子数据
             modelBuilder.Entity<Food>().HasData(
                 new Food { FoodId = 1, Name = "Apple (medium)", Calories = 95 },
                 new Food { FoodId = 2, Name = "Banana (medium)", Calories = 105 },
@@ -38,6 +43,11 @@ namespace CalorieBurnMgt.Models
                 new Food { FoodId = 19, Name = "Orange (medium)", Calories = 62 },
                 new Food { FoodId = 20, Name = "Strawberries (1 cup)", Calories = 46 }
             );
+
+            // 可选：给 Calorie 设置默认值
+            modelBuilder.Entity<Calorie>()
+                .Property(c => c.DistanceTaken)
+                .HasDefaultValue(0);
         }
     }
 }

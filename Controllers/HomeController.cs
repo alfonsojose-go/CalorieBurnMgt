@@ -1,25 +1,37 @@
-using System.Diagnostics;
+using CalorieBurnMgt.Data;
 using CalorieBurnMgt.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CalorieBurnMgt.Controllers
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly CalorieBurnDbContext context;
+    private readonly UserManager<User> _userManager;
+
+    public HomeController(CalorieBurnDbContext context, UserManager<User> userManager)
     {
-        private readonly CalorieBurnDbContext context;
+        this.context = context;
+        _userManager = userManager;
+    }
 
-        public HomeController(CalorieBurnDbContext context)
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        // ????????
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
         {
-            this.context = context;
+            // ????? ? ??????
+            return RedirectToAction("Login", "Users");
         }
 
-        public IActionResult Index(int userId = 6) // Pass userId as parameter
-        {
-            var user = context.Users
-                .Include(u => u.Calories)
-                .FirstOrDefault(u => u.UserId == userId);
-            return View(user);
-        }
+        // ????? Calories ??
+        user = await context.Users
+            .Include(u => u.Calories)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        return View(user);
     }
 }

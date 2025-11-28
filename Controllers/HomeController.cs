@@ -1,19 +1,25 @@
-using System.Diagnostics;
+using CalorieBurnMgt.Data;
 using CalorieBurnMgt.Models;
 using CalorieBurnMgt.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CalorieBurnMgt.Controllers
+public class HomeController : Controller
 {
-    public class HomeController : Controller
-    {
-        private readonly CalorieBurnDbContext context;
+    private readonly CalorieBurnDbContext context;
+    private readonly UserManager<User> _userManager;
 
-        public HomeController(CalorieBurnDbContext context)
-        {
-            this.context = context;
-        }
+    public HomeController(CalorieBurnDbContext context, UserManager<User> userManager)
+    {
+        this.context = context;
+        _userManager = userManager;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        // ????????
+        var user = await _userManager.GetUserAsync(User);
 
         public IActionResult Index(string userId)
         {

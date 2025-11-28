@@ -1,4 +1,5 @@
-﻿using CalorieBurnMgt.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using CalorieBurnMgt.Data;
 using CalorieBurnMgt.DTOs;
 using CalorieBurnMgt.Models;
 using CalorieBurnMgt.Services;

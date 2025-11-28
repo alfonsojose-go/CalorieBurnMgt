@@ -3,30 +3,30 @@ using Microsoft.AspNetCore.Authorization;
 
 public class ModulesController : Controller
 {
-    // Free module, accessible to all users
+    // 免费模块，所有用户都可以访问
     public IActionResult Free()
     {
-        return View(); // Returns Views/Modules/Free.cshtml
+        return View(); // 返回 Views/Modules/Free.cshtml
     }
 
-    // Premium module, requires membership
-    [Authorize] // Ensures user is logged in
+    // 高级模块，需要会员
+    [Authorize] // 确保用户已登录
     public IActionResult Premium()
     {
-        bool isPremium = User.IsInRole("Premium"); // Or check database field
+        bool isPremium = User.IsInRole("Premium"); // 或者数据库字段判断
         if (!isPremium)
         {
-            // Non-premium users redirected to upgrade prompt page
+            // 非会员跳到升级提示页面
             return RedirectToAction("Upgrade");
         }
 
-        return View(); // Returns Views/Modules/Premium.cshtml
+        return View(); // 返回 Views/Modules/Premium.cshtml
     }
 
-    // Prompt user to upgrade membership
+    // 提示用户升级会员
     [Authorize]
     public IActionResult Upgrade()
     {
-        return View(); // Returns Views/Modules/Upgrade.cshtml
+        return View(); // 返回 Views/Modules/Upgrade.cshtml
     }
 }

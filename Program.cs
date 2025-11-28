@@ -21,14 +21,6 @@ builder.Services.AddDbContext<CalorieBurnDbContext>(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<CalorieBurnDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 6;
-});
 
 // Register email service
 builder.Services.AddScoped<IEmailService, EmailService>();

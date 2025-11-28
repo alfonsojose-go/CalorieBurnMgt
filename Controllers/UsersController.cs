@@ -28,67 +28,29 @@ public class UsersController : Controller
     public IActionResult Register() => View();
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(CalorieBurnMgt.DTOs.RegisterRequest dto)
+    public async Task<IActionResult> Register( CalorieBurnMgt.DTOs.RegisterRequest dto)
     {
-        // 1️⃣ Backend email format validation
-        if (!new EmailAddressAttribute().IsValid(dto.Email))
-        {
-            ModelState.AddModelError("Email", "Email format is invalid");
-        }
+        if (!ModelState.IsValid) return View(dto);
 
-        // 2️⃣ Check model validation (including Age, Weight, Height, Password, etc.)
-        if (!ModelState.IsValid)
-        {
-            return View(dto); // Validation failed, return to original page to display errors
-        }
-
-        // 3️⃣ Check if username is unique
-        var existingUser = await _userManager.FindByNameAsync(dto.UserName);
-        if (existingUser != null)
-        {
-            ModelState.AddModelError("UserName", "Username already exists. Please choose another.");
-            return View(dto);
-        }
-
-        // 4️⃣ Check if email is unique
-        var existingEmail = await _userManager.FindByEmailAsync(dto.Email);
-        if (existingEmail != null)
-        {
-            ModelState.AddModelError("Email", "Email already exists. Please use another.");
-            return View(dto);
-        }
-
-        // 5️⃣ Create Identity user object
         var user = new User
         {
             UserName = dto.UserName,
             FullName = dto.FullName,
-            Email = dto.Email,
             Age = dto.Age,
             Weight = dto.Weight,
+            Email = dto.Email, // ✅ Must include
             Height = dto.Height
         };
 
-        // 6️⃣ Use UserManager to create user
         var result = await _userManager.CreateAsync(user, dto.Password);
-
         if (result.Succeeded)
-        {
-            TempData["Message"] = "Registration successful! You can now log in.";
             return RedirectToAction("Login");
-        }
 
-        // 7️⃣ Registration failed, add Identity errors to ModelState
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+        foreach (var err in result.Errors)
+            ModelState.AddModelError("", err.Description);
 
-        // 8️⃣ Return view to display errors
         return View(dto);
     }
-
 
     [HttpGet]
     public IActionResult Login() => View();
@@ -101,14 +63,14 @@ public class UsersController : Controller
 
         var user = await _userManager.FindByNameAsync(dto.UserName);
 
-        // Username does not exist
+        // 🔴 Username does not exist
         if (user == null)
         {
             ModelState.AddModelError("UserName", "Username does not exist.");
             return View(dto);
         }
 
-        // Password incorrect
+        // 🔴 Password incorrect
         var passwordCheck = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
         if (!passwordCheck.Succeeded)
         {
@@ -118,9 +80,7 @@ public class UsersController : Controller
 
         // Login success
         await _signInManager.SignInAsync(user, false);
-
-        // ⚡ Pass userId to HomeController here
-        return RedirectToAction("Index", "Home", new { userId = user.Id });
+        return RedirectToAction("Dashboard");
     }
 
     [HttpGet]
@@ -142,7 +102,7 @@ public class UsersController : Controller
     [HttpGet]
     public IActionResult ResetPassword() => View();
 
-
+    
 
     [HttpGet]
     public async Task<IActionResult> Membership()
@@ -171,9 +131,7 @@ public class UsersController : Controller
     [HttpPost]
     public IActionResult UpgradeMembership()
     {
-        // Get current request domain and port
-        var request = HttpContext.Request;
-        var domain = $"{request.Scheme}://{request.Host}";
+        var domain = "https://localhost:7022"; // Change to your domain
         var options = new SessionCreateOptions
         {
             PaymentMethodTypes = new List<string> { "card" },
@@ -274,12 +232,6 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest dto)
     {
-
-        // 1️⃣ Backend email format validation
-        if (!new EmailAddressAttribute().IsValid(dto.Email))
-        {
-            ModelState.AddModelError("Email", "Email format is invalid");
-        }
         if (!ModelState.IsValid) return View(dto);
 
         string resetLink = string.Empty;

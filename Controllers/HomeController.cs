@@ -1,6 +1,6 @@
 using CalorieBurnMgt.Data;
 using CalorieBurnMgt.Models;
-using Microsoft.AspNetCore.Identity;
+using CalorieBurnMgt.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,17 +21,14 @@ public class HomeController : Controller
         // ????????
         var user = await _userManager.GetUserAsync(User);
 
-        if (user == null)
+        public IActionResult Index(string userId)
         {
-            // ????? ? ??????
-            return RedirectToAction("Login", "Users");
+            var user = context.Users
+                .Include(u => u.Calories)
+                .FirstOrDefault(u => u.Id == userId);
+
+            return View(user);
         }
 
-        // ????? Calories ??
-        user = await context.Users
-            .Include(u => u.Calories)
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        return View(user);
     }
 }

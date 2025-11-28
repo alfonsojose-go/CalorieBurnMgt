@@ -16,12 +16,11 @@
 
             @if (Model.TotalCalorieBalance != null)
             {
-                <p><strong>Calorie Balance:</strong> @Model.TotalCalorieBalance calories</p>
-            }
-            else
-            {
-                <p><strong>Calorie Balance:</strong> No calorie data available</p>
-            }
+                <p><strong>FullName:</strong> @Model.FullName</p>
+                <p><strong>Age:</strong> @Model.Age</p>
+                <p><strong>Weight:</strong> @Model.Weight kg</p>
+                <p><strong>Height:</strong> @Model.Height cm</p>
+                <p><strong>BMI: @Model.BMI</strong></p>
 
             <!-- 🔔 实时显示会员状态 -->
             <style>

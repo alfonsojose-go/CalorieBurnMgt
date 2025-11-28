@@ -5,11 +5,9 @@ namespace CalorieBurnMgt.DTOs
 {
     public class ForgotPasswordRequestDto
     {
-        
-
-        [Required(ErrorMessage = "Email is required")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email format is invalid")]
-        [MaxLength(100)]
-        public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Please enter your email address")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        [Display(Name = "Email")]  // DTO is used, keep Display for UI label
+        public string Email { get; set; }
     }
 }

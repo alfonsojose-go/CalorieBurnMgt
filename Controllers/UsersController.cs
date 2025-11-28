@@ -80,7 +80,7 @@ public class UsersController : Controller
 
         // Login success
         await _signInManager.SignInAsync(user, false);
-        return RedirectToAction("Dashboard");
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]

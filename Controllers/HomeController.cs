@@ -3,6 +3,7 @@ using CalorieBurnMgt.Models;
 using CalorieBurnMgt.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 public class HomeController : Controller
 {
@@ -18,17 +19,24 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        // ????????
+        // Get the current logged-in user
         var user = await _userManager.GetUserAsync(User);
 
-        public IActionResult Index(string userId)
+        if (user == null)
         {
-            var user = context.Users
-                .Include(u => u.Calories)
-                .FirstOrDefault(u => u.Id == userId);
-
-            return View(user);
+            return Challenge(); // Or redirect to login page
         }
 
+        // Get user with included Calories data using the actual user ID
+        var userWithCalories = await context.Users
+            .Include(u => u.Calories)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        if (userWithCalories == null)
+        {
+            return NotFound(); // Or handle appropriately
+        }
+
+        return View(userWithCalories);
     }
 }

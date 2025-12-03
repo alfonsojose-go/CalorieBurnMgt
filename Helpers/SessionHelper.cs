@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
+using System.Security.Claims;
 
 namespace CalorieBurnMgt.Helpers
 {
@@ -12,42 +12,57 @@ namespace CalorieBurnMgt.Helpers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // Get the current user ID from session
-        public int GetCurrentUserId()
+        // Get user ID as string (for Identity's GUID/string IDs)
+        public string GetCurrentUserId()
         {
-            var userId = _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
+            var user = _httpContextAccessor.HttpContext?.User;
 
-            if (userId == null || userId == 0)
+            if (user?.Identity?.IsAuthenticated != true)
             {
                 throw new UnauthorizedAccessException("User must be logged in");
             }
 
-            return userId.Value;
-        }
+            // Method 1: Try to get user ID from claims
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        // Set user ID in session (use this in your Login action)
-        public void SetUserId(int userId)
-        {
-            _httpContextAccessor.HttpContext?.Session.SetInt32("UserId", userId);
+            // Method 2: If not found in claims, get from User.Identity.Name
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = user.Identity.Name;
+
+                // If it's a username, we need to look up the actual user ID
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    // You might need to inject UserManager for this
+                    throw new UnauthorizedAccessException("Username found but need to look up User ID. Please ensure claims are properly set.");
+                }
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found. Please log in again.");
+            }
+
+            return userId;
         }
 
         // Check if user is logged in
         public bool IsUserLoggedIn()
         {
-            var userId = _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
-            return userId != null && userId > 0;
+            return _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true;
         }
 
-        // Clear user session (use this in your Logout action)
-        public void ClearSession()
+        // Get user ID without throwing exception
+        public string? TryGetCurrentUserId()
         {
-            _httpContextAccessor.HttpContext?.Session.Clear();
-        }
-
-        // Get user ID without throwing exception (returns null if not logged in)
-        public int? TryGetCurrentUserId()
-        {
-            return _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
+            try
+            {
+                return GetCurrentUserId();
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

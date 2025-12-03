@@ -7,11 +7,11 @@
         // 改为 string 类型，匹配 IdentityUser.Id
         public string UserId { get; set; }
 
-        public int FoodId { get; set; }
+        public int FoodId { get; set; } 
 
         // 导航属性
         public User User { get; set; }      // EF Core 会自动识别一对多关系
-        public Food Food { get; set; }
+        public Food Food { get; set; } 
 
         public DateTime DateConsumed { get; set; }
 

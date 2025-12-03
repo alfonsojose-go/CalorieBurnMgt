@@ -1,4 +1,5 @@
 ﻿using CalorieBurnMgt.Data;
+using CalorieBurnMgt.Helpers;
 using CalorieBurnMgt.Models;
 using CalorieBurnMgt.Services;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,10 @@ builder.Services.AddIdentity<User, IdentityRole>()
 // Register email service
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Register SessionHelper
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SessionHelper>();
+
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -46,8 +51,8 @@ var app = builder.Build();
 // Middleware
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 app.UseSession();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

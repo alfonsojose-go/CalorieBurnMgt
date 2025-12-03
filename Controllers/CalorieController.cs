@@ -35,7 +35,7 @@ namespace CalorieBurnMgt.Controllers
         public IActionResult AddCalorie(string[] DateConsumed, string[] FoodName, int[] FoodCalories)
         {
             // Get the current user's ID (adjust this based on your authentication setup)
-            string currentUserId = "6"; //sessionHelper.GetCurrentUserId(); // You'll need to implement this method
+            string currentUserId = sessionHelper.GetCurrentUserId();
 
             // Validate that all arrays have the same length
             if (DateConsumed == null || FoodName == null || FoodCalories == null ||
@@ -86,60 +86,79 @@ namespace CalorieBurnMgt.Controllers
 
         // GET: Display the Add Distance form
         [HttpGet]
-        public IActionResult AddDistance()
+        public IActionResult SubtractDistance()
         {
             return View();
         }
 
         // POST: Handle distance form submission
         [HttpPost]
-        public IActionResult AddDistance(string[] DateBurned, decimal[] DistanceTaken)
+        public IActionResult SubtractDistance(string[] DateBurned, decimal[] DistanceTaken)
         {
-            // Get the current user's ID using SessionHelper
-            string currentUserId = "6"; ; // sessionHelper.GetCurrentUserId();
+            
+                // Get the current user's ID using SessionHelper
+                string currentUserId = sessionHelper.GetCurrentUserId(); // Remove .ToString()
 
-            // Validate that all arrays have the same length
-            if (DateBurned == null || DistanceTaken == null || DateBurned.Length != DistanceTaken.Length)
-            {
-                ModelState.AddModelError("", "Invalid form data");
-                return View();
-            }
-
-            // Process each distance item
-            for (int i = 0; i < DateBurned.Length; i++)
-            {
-                // Skip if distance is not provided or is zero/negative
-                if (DistanceTaken[i] <= 0)
-                    continue;
-
-                // Parse the date
-                if (!DateTime.TryParse(DateBurned[i], out DateTime dateBurned))
-                    continue;
-
-                // Calculate calories burned using David's formula
-                // Assuming formula: CaloriesBurned = DistanceTaken * 62 (adjust this based on actual formula)
-                int caloriesBurned = (int)(DistanceTaken[i] * 62);
-
-                // Create new Calorie entry
-                var calorieEntry = new Calorie
+                // Validate that all arrays have the same length
+                if (DateBurned == null || DistanceTaken == null || DateBurned.Length != DistanceTaken.Length)
                 {
-                    UserId = currentUserId,
-                    FoodId = 0, // No food associated with distance entries
-                    DateConsumed = DateTime.MinValue, // Not applicable for distance entries
-                    DateBurned = dateBurned,
-                    CaloriesTaken = 0, // No calories consumed for distance entries
-                    DistanceTaken = (int)DistanceTaken[i], // Convert to int if your model uses int
-                    CaloriesBurned = caloriesBurned
-                };
+                    ModelState.AddModelError("", "Invalid form data");
+                    return View();
+                }
 
-                context.Calories.Add(calorieEntry);
-            }
+                // Find or create the "Exercise" food entry
+                var exerciseFood = context.Foods
+                    .FirstOrDefault(f => f.Name == "Exercise" || f.Name == "Distance Tracking");
 
-            // Save all changes to database
-            context.SaveChanges();
+                if (exerciseFood == null)
+                {
+                    // Create exercise food entry if it doesn't exist
+                    exerciseFood = new Food
+                    {
+                        Name = "Exercise",
+                        Calories = 0, // Don't assign calories for exercise food. Its calories are saved in Calorie Table, not in Food Table.
+                    };
+                    context.Foods.Add(exerciseFood);
+                    context.SaveChanges(); // Save to get the FoodId
+                }
 
-            TempData["SuccessMessage"] = "Distance and calories burned added successfully!";
-            return RedirectToAction("Index", "Home");
+                // Process each distance item
+                for (int i = 0; i < DateBurned.Length; i++)
+                {
+                    // Skip if distance is not provided or is zero/negative
+                    if (DistanceTaken[i] <= 0)
+                        continue;
+
+                    // Parse the date
+                    if (!DateTime.TryParse(DateBurned[i], out DateTime dateBurned))
+                        continue;
+
+                    // Calculate calories burned using David's formula
+                    // Assuming formula: CaloriesBurned = DistanceTaken * 62 (adjust this based on actual formula)
+                    int caloriesBurned = (int)(DistanceTaken[i] * 62);
+
+                    // Create new Calorie entry
+                    var calorieEntry = new Calorie
+                    {
+                        UserId = currentUserId,
+                        FoodId = exerciseFood.FoodId, // Use the actual exercise FoodId
+                        DateConsumed = DateTime.MinValue, // Not applicable for distance entries
+                        DateBurned = dateBurned,
+                        CaloriesTaken = 0, // No calories consumed for distance entries
+                        DistanceTaken = (int)DistanceTaken[i], // Convert to int if your model uses int
+                        CaloriesBurned = caloriesBurned
+                    };
+
+                    context.Calories.Add(calorieEntry);
+                }
+
+                // Save all changes to database
+                context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Distance and calories burned added successfully!";
+                return RedirectToAction("Index", "Home");
+            
+           
         }
 
 

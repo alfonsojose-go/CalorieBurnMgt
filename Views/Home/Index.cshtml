@@ -8,11 +8,6 @@
 
         @if (Model != null)
         {
-            <p><strong>FullName:</strong> @Model.FullName</p>
-            <p><strong>Age:</strong> @Model.Age</p>
-            <p><strong>Weight:</strong> @Model.Weight kg</p>
-            <p><strong>Height:</strong> @Model.Height cm</p>
-            <p><strong>BMI:</strong> @Model.BMI</p>
 
             @if (Model.TotalCalorieBalance != null)
             {
@@ -151,14 +146,6 @@
         {
             <p>No user profile found. <a href="/User/Create">Create your profile</a></p>
         }
-
-        <!-- Share section 保留 -->
-        <div class="mt-3">
-            <h3>Share to</h3>
-            <p>Facebook</p>
-            <p>Twitter</p>
-            <p>Instagram</p>
-        </div>
     </div>
 
     <!-- === Calories / Activities Section === -->
@@ -175,7 +162,7 @@
                     </div>
                     <div class="calorie-buttons">
                         <a asp-controller="Calorie" asp-action="AddCalorie" class="btn btn-primary">Add Calories</a>
-                        <a asp-controller="Calorie" asp-action="AddDistance" class="btn btn-primary">Add Distance</a>
+                        <a asp-controller="Calorie" asp-action="SubtractDistance" class="btn btn-primary">Subtract Distance</a>
                     </div>
                 </div>
             </div>

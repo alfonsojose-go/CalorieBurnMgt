@@ -34,10 +34,10 @@ namespace CalorieBurnMgt.Controllers
         [HttpPost]
         public IActionResult AddCalorie(string[] DateConsumed, string[] FoodName, int[] FoodCalories)
         {
-            // Get the current user's ID (adjust this based on your authentication setup)
+            // Get the current user's ID
             string currentUserId = sessionHelper.GetCurrentUserId();
 
-            // Validate that all arrays have the same length
+            // Validate form
             if (DateConsumed == null || FoodName == null || FoodCalories == null ||
                 DateConsumed.Length != FoodName.Length || FoodName.Length != FoodCalories.Length)
             {
@@ -46,39 +46,50 @@ namespace CalorieBurnMgt.Controllers
                 return View();
             }
 
-            // Process each food item
+            double totalDistanceToRun = 0;
+
+            // Process each food item entry
             for (int i = 0; i < DateConsumed.Length; i++)
             {
-                // Skip if no food was selected
                 if (string.IsNullOrEmpty(FoodName[i]))
                     continue;
 
-                // Find the food ID by name
                 var food = context.Foods.FirstOrDefault(f => f.Name == FoodName[i]);
                 if (food == null)
                     continue;
 
-                // Parse the date
                 if (!DateTime.TryParse(DateConsumed[i], out DateTime dateConsumed))
                     continue;
 
-                // Create new Calorie entry
+                int caloriesTaken = FoodCalories[i];
+
+                // Calculate distance needed to burn eaten calories
+                double caloriesPerKm = 80.0;
+                double distanceToRun = caloriesTaken / caloriesPerKm;
+                totalDistanceToRun += distanceToRun;
+
+                // CREATE CALORIE ENTRY FOR FOOD (NO CaloriesBurned)
                 var calorieEntry = new Calorie
                 {
                     UserId = currentUserId,
-                    FoodId = food.FoodId, // Assuming your Food model has FoodId property
+                    FoodId = food.FoodId,
                     DateConsumed = dateConsumed,
-                    CaloriesTaken = FoodCalories[i],
-                    DateBurned = DateTime.MinValue, // Set default or leave for later
-                    DistanceTaken = 0, // Set default or leave for later
-                    CaloriesBurned = 0 // Set default or leave for later
+                    CaloriesTaken = caloriesTaken,
+
+                    // FIX: Food should NOT burn calories
+                    CaloriesBurned = 0,
+
+                    DateBurned = DateTime.MinValue,
+                    DistanceTaken = 0
                 };
 
                 context.Calories.Add(calorieEntry);
             }
 
-            // Save all changes to database
             context.SaveChanges();
+
+            // Store distance in TempData as string
+            TempData["DistanceToRun"] = totalDistanceToRun.ToString();
 
             TempData["SuccessMessage"] = "Calories added successfully!";
             return RedirectToAction("Index", "Home");
@@ -93,74 +104,88 @@ namespace CalorieBurnMgt.Controllers
 
         // POST: Handle distance form submission
         [HttpPost]
-        public IActionResult SubtractDistance(string[] DateBurned, decimal[] DistanceTaken)
+        public IActionResult SubtractDistance(string[] DateBurned, decimal[] DistanceTaken, string[] ActivityType)
         {
-            
-                // Get the current user's ID using SessionHelper
-                string currentUserId = sessionHelper.GetCurrentUserId(); // Remove .ToString()
+            // Get the current user's ID using SessionHelper
+            string currentUserId = sessionHelper.GetCurrentUserId();
 
-                // Validate that all arrays have the same length
-                if (DateBurned == null || DistanceTaken == null || DateBurned.Length != DistanceTaken.Length)
+            // Validate that all arrays have the same length
+            if (DateBurned == null || DistanceTaken == null || ActivityType == null ||
+                DateBurned.Length != DistanceTaken.Length || ActivityType.Length != DistanceTaken.Length)
+            {
+                ModelState.AddModelError("", "Invalid form data");
+                return View();
+            }
+
+            // Find or create the "Exercise" food entry
+            var exerciseFood = context.Foods
+                .FirstOrDefault(f => f.Name == "Exercise" || f.Name == "Distance Tracking");
+
+            if (exerciseFood == null)
+            {
+                exerciseFood = new Food
                 {
-                    ModelState.AddModelError("", "Invalid form data");
-                    return View();
-                }
-
-                // Find or create the "Exercise" food entry
-                var exerciseFood = context.Foods
-                    .FirstOrDefault(f => f.Name == "Exercise" || f.Name == "Distance Tracking");
-
-                if (exerciseFood == null)
-                {
-                    // Create exercise food entry if it doesn't exist
-                    exerciseFood = new Food
-                    {
-                        Name = "Exercise",
-                        Calories = 0, // Don't assign calories for exercise food. Its calories are saved in Calorie Table, not in Food Table.
-                    };
-                    context.Foods.Add(exerciseFood);
-                    context.SaveChanges(); // Save to get the FoodId
-                }
-
-                // Process each distance item
-                for (int i = 0; i < DateBurned.Length; i++)
-                {
-                    // Skip if distance is not provided or is zero/negative
-                    if (DistanceTaken[i] <= 0)
-                        continue;
-
-                    // Parse the date
-                    if (!DateTime.TryParse(DateBurned[i], out DateTime dateBurned))
-                        continue;
-
-                    // Calculate calories burned using David's formula
-                    // Assuming formula: CaloriesBurned = DistanceTaken * 62 (adjust this based on actual formula)
-                    int caloriesBurned = (int)(DistanceTaken[i] * 62);
-
-                    // Create new Calorie entry
-                    var calorieEntry = new Calorie
-                    {
-                        UserId = currentUserId,
-                        FoodId = exerciseFood.FoodId, // Use the actual exercise FoodId
-                        DateConsumed = DateTime.MinValue, // Not applicable for distance entries
-                        DateBurned = dateBurned,
-                        CaloriesTaken = 0, // No calories consumed for distance entries
-                        DistanceTaken = (int)DistanceTaken[i], // Convert to int if your model uses int
-                        CaloriesBurned = caloriesBurned
-                    };
-
-                    context.Calories.Add(calorieEntry);
-                }
-
-                // Save all changes to database
+                    Name = "Exercise",
+                    Calories = 0, // Exercise calories are stored in Calorie table
+                };
+                context.Foods.Add(exerciseFood);
                 context.SaveChanges();
+            }
 
-                TempData["SuccessMessage"] = "Distance and calories burned added successfully!";
-                return RedirectToAction("Index", "Home");
-            
-           
+            // Process each distance item
+            for (int i = 0; i < DateBurned.Length; i++)
+            {
+                // Skip if distance is not provided or is zero/negative
+                if (DistanceTaken[i] <= 0)
+                    continue;
+
+                // Parse the date
+                if (!DateTime.TryParse(DateBurned[i], out DateTime dateBurned))
+                    continue;
+
+                // --- Convert to walking-equivalent distance ---
+                double rawDistance = (double)DistanceTaken[i]; // what user entered
+                string activity = ActivityType[i];
+
+                double walkingEquivalent = rawDistance; // default: walking
+
+                if (string.Equals(activity, "Jogging", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Jogging is twice as effective as walking
+                    walkingEquivalent = rawDistance * 2;
+                }
+                else if (string.Equals(activity, "Cycling", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Cycling is 4x as effective as walking
+                    walkingEquivalent = rawDistance * 4;
+                }
+
+                // Calculate calories burned using walking-equivalent distance
+                int caloriesBurned = (int)(walkingEquivalent * 62);
+
+                // Create new Calorie entry
+                var calorieEntry = new Calorie
+                {
+                    UserId = currentUserId,
+                    FoodId = exerciseFood.FoodId,
+                    DateConsumed = DateTime.MinValue, // Not applicable for distance entries
+                    DateBurned = dateBurned,
+                    CaloriesTaken = 0, // No calories consumed for distance entries
+
+                    // Store walking-equivalent distance (so HomeController math stays consistent)
+                    DistanceTaken = (int)Math.Round(walkingEquivalent),
+
+                    CaloriesBurned = caloriesBurned
+                };
+
+                context.Calories.Add(calorieEntry);
+            }
+
+            // Save all changes to database
+            context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Distance and calories burned added successfully!";
+            return RedirectToAction("Index", "Home");
         }
-
-
     }
 }

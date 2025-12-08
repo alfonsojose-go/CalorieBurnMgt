@@ -8,7 +8,6 @@
 
         @if (Model != null)
         {
-
             @if (Model.TotalCalorieBalance != null)
             {
                 <p><strong>FullName:</strong> @Model.FullName</p>
@@ -17,129 +16,109 @@
                 <p><strong>Height:</strong> @Model.Height cm</p>
                 <p><strong>BMI: @Model.BMI</strong></p>
 
-            <!-- 🔔 实时显示会员状态 -->
-            <style>
-                .membership-section {
-                    background: linear-gradient(135deg, #d4edda, #c3e6cb);
-                    padding: 20px;
-                    border-radius: 12px;
-                    margin: 20px 0;
-                    border-left: 4px solid #28a745;
-                }
-                
-                .membership-section.free {
-                    background: linear-gradient(135deg, #e9ecef, #dee2e6);
-                    border-left-color: #6c757d;
-                }
-                
-                .membership-status {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 15px;
-                }
-                
-                .membership-status i {
-                    font-size: 24px;
-                    margin-right: 15px;
-                    color: #28a745;
-                }
-                
-                .membership-section.free .membership-status i {
-                    color: #6c757d;
-                }
-                
-                .status-text {
-                    flex: 1;
-                }
-                
-                .status-text strong {
-                    display: block;
-                    font-size: 14px;
-                    color: #495057;
-                    margin-bottom: 5px;
-                }
-                
-                .status-value {
-                    font-size: 18px;
-                    font-weight: 600;
-                    color: #155724;
-                    margin: 0;
-                }
-                
-                .membership-section.free .status-value {
-                    color: #495057;
-                }
-                
-                .expiry-info {
-                    display: flex;
-                    align-items: center;
-                    padding: 12px 15px;
-                    background: #fff3cd;
-                    border-radius: 8px;
-                    color: #856404;
-                    margin-bottom: 15px;
-                }
-                
-                .expiry-info i {
-                    margin-right: 10px;
-                    color: #ffc107;
-                }
-                
-                .upgrade-btn {
-                    background: linear-gradient(135deg, #28a745, #20c997);
-                    border: none;
-                    color: white;
-                    padding: 12px 25px;
-                    font-size: 16px;
-                    font-weight: 600;
-                    border-radius: 8px;
-                    width: 100%;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
-                .upgrade-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-                }
-                
-                .upgrade-btn i {
-                    margin-right: 8px;
-                }
-            </style>
-            
-            <div class="membership-section @(Model.IsPremium ? "premium" : "free")">
-                <div class="membership-status">
-                    <i class="fas @(Model.IsPremium ? "fa-crown" : "fa-user")"></i>
-                    <div class="status-text">
-                        <strong>Membership:</strong>
-                        <p class="status-value">@(Model.IsPremium ? "Premium" : "Free")</p>
-                    </div>
-                </div>
-                
-                @if (Model.IsPremium && Model.PremiumExpireDate != null)
-                {
-                    <div class="expiry-info">
-                        <i class="fas fa-clock"></i>
-                        <div>
-                            <strong>Expires:</strong> @Model.PremiumExpireDate?.ToString("yyyy-MM-dd")
+                <!-- Membership CSS + UI -->
+                <style>
+                    .membership-section {
+                        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+                        padding: 20px;
+                        border-radius: 12px;
+                        margin: 20px 0;
+                        border-left: 4px solid #28a745;
+                    }
+
+                        .membership-section.free {
+                            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+                            border-left-color: #6c757d;
+                        }
+
+                    .membership-status {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 15px;
+                    }
+
+                        .membership-status i {
+                            font-size: 24px;
+                            margin-right: 15px;
+                            color: #28a745;
+                        }
+
+                    .membership-section.free .membership-status i {
+                        color: #6c757d;
+                    }
+
+                    .status-text strong {
+                        display: block;
+                        font-size: 14px;
+                        color: #495057;
+                        margin-bottom: 5px;
+                    }
+
+                    .status-value {
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #155724;
+                    }
+
+                    .membership-section.free .status-value {
+                        color: #495057;
+                    }
+
+                    .expiry-info {
+                        display: flex;
+                        align-items: center;
+                        padding: 12px 15px;
+                        background: #fff3cd;
+                        border-radius: 8px;
+                        color: #856404;
+                        margin-bottom: 15px;
+                    }
+
+                        .expiry-info i {
+                            margin-right: 10px;
+                            color: #ffc107;
+                        }
+
+                    .upgrade-btn {
+                        background: linear-gradient(135deg, #28a745, #20c997);
+                        border: none;
+                        color: white;
+                        padding: 12px 25px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        border-radius: 8px;
+                        width: 100%;
+                    }
+                </style>
+
+                <div class="membership-section @(Model.IsPremium ? "premium" : "free")">
+                    <div class="membership-status">
+                        <i class="fas @(Model.IsPremium ? "fa-crown" : "fa-user")"></i>
+                        <div class="status-text">
+                            <strong>Membership:</strong>
+                            <p class="status-value">@(Model.IsPremium ? "Premium" : "Free")</p>
                         </div>
                     </div>
-                }
 
-                <!-- 🔔 Free 用户显示升级按钮 -->
-                @if (!Model.IsPremium)
-                {
-                    <form asp-controller="Users" asp-action="UpgradeMembership" method="post">
-                        <button type="submit" class="upgrade-btn">
-                            <i class="fas fa-rocket"></i> Upgrade to Premium $9.99
-                        </button>
-                    </form>
-                }
-            </div>
+                    @if (Model.IsPremium && Model.PremiumExpireDate != null)
+                    {
+                        <div class="expiry-info">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Expires:</strong> @Model.PremiumExpireDate?.ToString("yyyy-MM-dd")
+                            </div>
+                        </div>
+                    }
+
+                    @if (!Model.IsPremium)
+                    {
+                        <form asp-controller="Users" asp-action="UpgradeMembership" method="post">
+                            <button type="submit" class="upgrade-btn">
+                                <i class="fas fa-rocket"></i> Upgrade to Premium $9.99
+                            </button>
+                        </form>
+                    }
+                </div>
             }
         }
         else
@@ -154,12 +133,18 @@
         <div class="calories-container">
             <div class="calories-value">
                 <div class="calorie-items">
+
                     <div class="calorie-item">
-                        <p>@Model.TotalCalorieBalance calories</p>
+                        <p><strong>@Model.TotalCalorieBalance calories</strong></p>
                     </div>
+
+                    <!-- ⭐ THIS is now the ONLY distance display area -->
                     <div class="calorie-item">
-                        <p>XX Minimum distance</p>
+                        <p id="distance-display">
+                            <strong>@ViewBag.RequiredWalking?.ToString("0.00") km</strong> minimum distance
+                        </p>
                     </div>
+
                     <div class="calorie-buttons">
                         <a asp-controller="Calorie" asp-action="AddCalorie" class="btn btn-primary">Add Calories</a>
                         <a asp-controller="Calorie" asp-action="SubtractDistance" class="btn btn-primary">Subtract Distance</a>
@@ -167,20 +152,44 @@
                 </div>
             </div>
 
+            <!-- ⭐ Your original activity buttons -->
             <div class="activities">
-                <a href="/">Walking</a>
-                <a href="/">Jogging</a>
-                <a href="/">Cycling</a>
+                <a href="javascript:void(0)" onclick="showActivity('Walking')">Walking</a>
+                <a href="javascript:void(0)" onclick="showActivity('Jogging')">Jogging</a>
+                <a href="javascript:void(0)" onclick="showActivity('Cycling')">Cycling</a>
             </div>
         </div>
     }
 </div>
 
-<!-- 🔔 操作消息 -->
+<!-- TempData message -->
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-info mt-3 text-center">@TempData["Message"]</div>
 }
 
-<!-- 添加 Font Awesome 图标库 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+@section Scripts {
+    <script>
+        function showActivity(type) {
+
+            let walking = "@ViewBag.RequiredWalking";
+            let jogging = "@ViewBag.RequiredJogging";
+            let cycling = "@ViewBag.RequiredCycling";
+
+            let display = document.getElementById("distance-display");
+
+            if (type === "Walking") {
+                display.innerHTML = `<strong>${parseFloat(walking).toFixed(2)} km</strong> minimum distance for walking`;
+            }
+            else if (type === "Jogging") {
+                display.innerHTML = `<strong>${parseFloat(jogging).toFixed(2)} km</strong> minimum distance for jogging`;
+            }
+            else if (type === "Cycling") {
+                display.innerHTML = `<strong>${parseFloat(cycling).toFixed(2)} km</strong> minimum distance for cycling`;
+            }
+        }
+    </script>
+}

@@ -30,6 +30,9 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<SessionHelper>();
 
+// ⭐ REGISTER ACTIVITY CALCULATOR SERVICE
+builder.Services.AddScoped<ActivityCalculator>();
+
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
